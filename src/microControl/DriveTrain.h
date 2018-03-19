@@ -23,13 +23,14 @@ private:
 	Sharp frontSharp, rightSharp, leftSharp;
 	Encoder enc;
 	Button backRLimitS, backLLimitS;
-	double wheelCircunference = 7.0 * M_PI, encCountsPerRev = 3300.0, heatDiferenceVictim = 5;
+	double wheelCircunference = 7.0 * M_PI, encCountsPerRev = 3600.0, heatDiferenceVictim = 5, lastDisplacement = 0;
 	long lastEncoderReading = 0, encoderReadRateMs = 16, lastHeatReading = 0, heatReadRateMs = 100;
 	Adafruit_MLX90614 mlxR = Adafruit_MLX90614(0x5A);
 	Adafruit_MLX90614 mlxL = Adafruit_MLX90614(0x55);
 	Dispenser dispenser = Dispenser(6);
 	ColorSensor colorSensor = ColorSensor();
 	LCD& lcd = LCD::getInstance();
+	bool lastDisplacementCompleted;
 public:
 	void setRightMotorsVelocity(double velocity);
 	void setLeftMotorsVelocity(double velocity);
@@ -51,6 +52,8 @@ public:
 	int getDistanceBack();
 	void driveDisplacement(double displacement, int angle, double velocity);
 	void alignWithWall(RobotFace faceToAlign);
+	bool wasLastDisplacementCompleted();
+	double getLastDisplacement();
 	Color getTileColor();
 };
 #endif

@@ -32,7 +32,7 @@ void Map::expandMap(){
 	Serial.print("Y:");
 	Serial.println(getRobotCoord().getY());
 
-	if(getRobotCoord().getX() == getWidth() - 1){
+	if(getRobotCoord().getX()  == getWidth() - 1){
 		if(!getTileAt(getRobotCoord()).wallExists(Right)){
 			for(int i = 0; i < tileMap.size(); ++i){
 				tileMap[i].push_back(Tile());
@@ -52,12 +52,12 @@ void Map::expandMap(){
 	}
 
 	if(getRobotCoord().getY() == 0){
-		if(!getTileAt(getRobotCoord()).wallExists(Up)){
-      vector<Tile> newRow;
-      for(int i = 0; i < tileMap[0].size(); ++i){
-        newRow.push_back(Tile());
-      }
-      tileMap.insert(tileMap.begin(), newRow);
+		if(!getTileAt(getRobotCoord()).wallExists(Down)){
+			vector<Tile> newRow;
+			for(int i = 0; i < tileMap[0].size(); ++i){
+				newRow.push_back(Tile());
+			}
+     		tileMap.insert(tileMap.begin(), newRow);
 			Coord newRobotCoord = getRobotCoord();
 			newRobotCoord.setY(1);
 			setRobotCoord(newRobotCoord);
@@ -65,7 +65,7 @@ void Map::expandMap(){
 	}
 
 	if(getRobotCoord().getY() == getHeight() - 1){
-		if(!getTileAt(getRobotCoord()).wallExists(Down)){
+		if(!getTileAt(getRobotCoord()).wallExists(Up)){
 			vector<Tile> newRow;
 			tileMap.push_back(newRow);
 		}

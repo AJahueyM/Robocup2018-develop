@@ -4,8 +4,11 @@ DriveTrain::DriveTrain() : topRight(2), topLeft(3), lowRight(4), lowLeft(1), enc
 	frontSharp(12), rightSharp(11), leftSharp(13),
 	backRLimitS(51), backLLimitS(53) {
 	Serial.println("DriveTrain initializing...");
+
+
+  	enc.write(0);
+
 	Serial.println("DriveTrain initialized");
-	enc.write(0);
 
 }
 
@@ -127,13 +130,13 @@ void DriveTrain::driveStraight(int angle, double velocity) {
 }
 
 void DriveTrain::driveDisplacement(double displacement, int angle, double velocity) {
+	lastDisplacement = displacement;
 	enc.write(0);
 	long startCount = enc.read();
 	startCount = abs(startCount);
 	long toMove = (abs(displacement) / wheelCircunference) * encCountsPerRev;
 	long encCount = startCount;
 	lastEncoderReading  = millis();
-
 	while (abs(encCount - startCount)  < toMove && getDistanceFront() > 7 ) {
 		if (millis() - lastEncoderReading > encoderReadRateMs) {
 			encCount = enc.read();
@@ -143,7 +146,11 @@ void DriveTrain::driveDisplacement(double displacement, int angle, double veloci
 		Serial.println(abs(encCount - startCount));
 		driveStraight(angle, velocity);
 	}
-
+	if(abs(encCount - startCount)  >= toMove){
+		lastDisplacementCompleted = true;
+	}else{
+		lastDisplacementCompleted = false;
+	}
 	driveVelocity(0);
 }
 
@@ -194,4 +201,12 @@ void DriveTrain::alignWithWall(RobotFace faceToAlign) {
 
 Color DriveTrain::getTileColor(){
 	colorSensor.getColor();
+}
+
+bool DriveTrain::wasLastDisplacementCompleted(){
+	return lastDisplacementCompleted;
+}
+
+double DriveTrain::getLastDisplacement(){
+	return lastDisplacement;
 }

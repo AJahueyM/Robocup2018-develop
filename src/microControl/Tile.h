@@ -17,14 +17,17 @@ public:
 	static const byte maskVisited = B10000000;
 	Tile();
 	Tile(byte identity);
+	Tile(byte identity, byte identity2);
 	bool isRamp();
 	bool wallExists(Direction side);
 	bool setWall(Direction side, bool value);
 	bool hasVictim();
+	bool wasVisited();
+	void visited(bool value);
 	Color getColor();
 private:
 	byte identity = B00000000;
-	byte identityVisited = B00000000;
+	byte identity2 = B00000000;
 };
 
 #endif

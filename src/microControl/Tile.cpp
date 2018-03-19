@@ -2,8 +2,14 @@
 
 Tile::Tile(){
 }
+
 Tile::Tile(byte identity){
     this->identity = identity;
+}
+
+Tile::Tile(byte identity, byte identity2){
+    this->identity = identity;
+    this->identity2 = identity2;
 }
 
 bool Tile::isRamp(){
@@ -62,6 +68,19 @@ bool Tile::setWall(Direction side, bool value){
             else
                 identity = identity & ~wallRightMask;
             break;
+    }
+}
+
+bool Tile::wasVisited() {
+    byte result = identity2  & maskVisited;
+    return result != 0;
+}
+
+void Tile::visited(bool value){
+    if(value){
+        identity2 = identity2 | maskVisited;
+    }else{
+        identity2 = identity2 & ~maskVisited;
     }
 }
 

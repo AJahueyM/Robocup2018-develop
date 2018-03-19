@@ -11,6 +11,7 @@ public:
 private:
 	Filter filter = Filter(10,3,10);
 	float distance;
+	int readForFilter = 25;
 	int analogPort;
 };
 
