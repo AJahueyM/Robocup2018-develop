@@ -26,8 +26,8 @@ public:
 	void visited(bool value);
 	Color getColor();
 private:
-	byte identity = B00000000;
-	byte identity2 = B00000000;
+	byte identity = 0;
+	byte identity2 = 0;
 };
 
 #endif

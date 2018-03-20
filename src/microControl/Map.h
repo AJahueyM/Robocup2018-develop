@@ -22,9 +22,12 @@ public:
 	Path getPathTo(Coord targetCoord);
 	uint8_t getWidth();
 	uint8_t getHeight();
+	int getNonVisitedTiles();
 private:
 	vector<vector<Tile>> tileMap;
 	Coord robotCoord;
+	byte mockIdentity = B11111111;
+	Tile mockTile;
 	Direction robotDirection;
 
 };

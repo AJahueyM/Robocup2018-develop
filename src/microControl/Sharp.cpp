@@ -6,6 +6,7 @@ Sharp::Sharp(int analogPort){
 }
 
 int Sharp::getDistance(){
+	double average = 0;
 	for(int i = 0; i < readForFilter; ++i){
 		double volts = analogRead(analogPort)  * 0.0048828125;
 
@@ -14,9 +15,9 @@ int Sharp::getDistance(){
 			distance = 30;
 		if(distance < 4)
 			distance = 4;
-
-		distance = filter.kalmanFilter();
+		average += distance;
+		//distance = filter.kalmanFilter();
 	}
 	
-	return distance;
+	return average / readForFilter;
 }

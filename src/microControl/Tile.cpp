@@ -1,6 +1,8 @@
 #include "Tile.h"
 
 Tile::Tile(){
+    identity = 0;
+    identity2 = 0;
 }
 
 Tile::Tile(byte identity){

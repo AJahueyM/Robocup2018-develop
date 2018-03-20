@@ -146,7 +146,7 @@ void DriveTrain::driveDisplacement(double displacement, int angle, double veloci
 		Serial.println(abs(encCount - startCount));
 		driveStraight(angle, velocity);
 	}
-	if(abs(encCount - startCount)  >= toMove){
+	if(abs(encCount - startCount)  >= toMove * 0.75){
 		lastDisplacementCompleted = true;
 	}else{
 		lastDisplacementCompleted = false;

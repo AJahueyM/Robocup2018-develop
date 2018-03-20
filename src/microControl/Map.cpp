@@ -3,6 +3,7 @@
 Map::Map(Tile initialTile){
 	tileMap.push_back(vector<Tile>());
 	tileMap[0].push_back(initialTile);
+	mockTile = Tile(mockIdentity, mockIdentity);
 }
 
 void Map::addColumn(Direction side){
@@ -14,6 +15,12 @@ void Map::addRow(Direction side){
 }
 
 Tile& Map::getTileAt(Coord coord){
+	if(coord.getY()> tileMap.size() - 1 || coord.getY() < 0){
+		return mockTile;
+	}
+	if(coord.getX()> tileMap[0].size() - 1 || coord.getX() < 0){
+		return mockTile;
+	}
 	return tileMap[coord.getY()][coord.getX()];
 }
 
@@ -67,6 +74,9 @@ void Map::expandMap(){
 	if(getRobotCoord().getY() == getHeight() - 1){
 		if(!getTileAt(getRobotCoord()).wallExists(Up)){
 			vector<Tile> newRow;
+			for(int i = 0; i < tileMap[0].size(); ++i){
+				newRow.push_back(Tile());
+			}
 			tileMap.push_back(newRow);
 		}
 	}
@@ -86,4 +96,15 @@ uint8_t Map::getWidth(){
 
 uint8_t Map::getHeight(){
 	return tileMap.size();
+}
+
+int Map::getNonVisitedTiles(){
+	int counter = 0;
+	for(vector<Tile> row : tileMap){
+		for(Tile t : row){
+			if(!t.wasVisited())
+				counter++;
+		}
+	}
+	return counter;
 }
