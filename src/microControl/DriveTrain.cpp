@@ -24,12 +24,16 @@ void DriveTrain::setLeftMotorsVelocity(double velocity) {
 }
 
 void DriveTrain::checkHeatDispense() {
-	if(millis() - lastHeatReading > heatReadRateMs){
+	if(millis() - lastHeatReading > heatReadRateMs && shouldDispense){
 		if (mlxL.readObjectTempC() - mlxL.readAmbientTempC() > heatDiferenceVictim) {
+			turn(0);
 			dispenser.dispenseDirection(DispenserDirection::left);
+			leftKit = true;
 		}
 		if (mlxR.readObjectTempC() - mlxR.readAmbientTempC() > heatDiferenceVictim) {
+			turn(0);
 			dispenser.dispenseDirection(DispenserDirection::right);
+			leftKit = true;
 		}
 		lastHeatReading = millis();
 	}
@@ -80,7 +84,8 @@ void DriveTrain::turnToAngle(int angle) {
 
 	while (abs(angleError) > 0) {
 		//lcd.display(String(angleError));
-		checkHeatDispense();
+		if(!leftKit && shouldDispense)
+			checkHeatDispense();
 		angleError = shortestAngleTurn(getYaw(), angle);
 		outputMultiplier = mapD(fabs(angleError), 0.0, 45.0, 0.1, 1.0);
 		if (outputMultiplier > .8) {
@@ -99,29 +104,37 @@ void DriveTrain::turnToAngle(int angle) {
 }
 
 void DriveTrain::driveStraight(int angle, double velocity) {
-	checkHeatDispense();
+	if(!leftKit && shouldDispense)
+		checkHeatDispense();
 
 	double angleError = shortestAngleTurn(getYaw(), angle);
 	//lcd.display(String(angleError));
-	double outputMultiplier = mapD(abs(angleError), 0.0, 5.0, 0.0, .8);
+	double outputMultiplier = mapD(abs(angleError), 0.0, 7.0, 0.0, 1);
 	
-	if (outputMultiplier > .8) {
-		outputMultiplier = .8;
+	if (outputMultiplier > 1) {
+		outputMultiplier = 1;
 	} else if (outputMultiplier < 0.0) {
 		outputMultiplier = 0.0; // RE ESTABLECIENDO EL VALOR DE OUTPUTMULTIPLIER CUANDO VELOCIDAD ES NEGATIVA
 	}
 
 	if (abs(angleError) > 0) {
 		if (angleError > 0.0) {
-			setLeftMotorsVelocity(velocity);
-			setRightMotorsVelocity(velocity - (velocity * outputMultiplier));
-
+			if(velocity > 0){
+				setLeftMotorsVelocity(velocity);
+				setRightMotorsVelocity(velocity - (velocity * outputMultiplier));				
+			}else{
+				setLeftMotorsVelocity(velocity - (velocity * outputMultiplier));
+				setRightMotorsVelocity(velocity);		
+			}
 		} else if (angleError < 0.0) {
-			setLeftMotorsVelocity(velocity - (velocity * outputMultiplier));
-			setRightMotorsVelocity(velocity);
-
+			if(velocity > 0){
+				setLeftMotorsVelocity(velocity - (velocity * outputMultiplier));
+				setRightMotorsVelocity(velocity);
+			}else{
+				setLeftMotorsVelocity(velocity);
+				setRightMotorsVelocity(velocity  - (velocity * outputMultiplier));
+			}
 		}
-
 	} else {
 		setLeftMotorsVelocity(velocity);
 		setRightMotorsVelocity(velocity);
@@ -129,7 +142,7 @@ void DriveTrain::driveStraight(int angle, double velocity) {
 	}
 }
 
-void DriveTrain::driveDisplacement(double displacement, int angle, double velocity) {
+void DriveTrain::driveDisplacement(double displacement, int angle, double velocity, bool ignoreColorSensor) {
 	lastDisplacement = displacement;
 	enc.write(0);
 	long startCount = enc.read();
@@ -137,7 +150,12 @@ void DriveTrain::driveDisplacement(double displacement, int angle, double veloci
 	long toMove = (abs(displacement) / wheelCircunference) * encCountsPerRev;
 	long encCount = startCount;
 	lastEncoderReading  = millis();
-	while (abs(encCount - startCount)  < toMove && getDistanceFront() > 7 ) {
+	interruptedColor = false;
+	Color tileColor = White;
+	lastDisplacementCompleted = false;
+	while ((abs(encCount - startCount)  < toMove && getDistanceFront() > 7 )  && tileColor != Black) {
+		if(!ignoreColorSensor)
+			tileColor = getTileColor();
 		if (millis() - lastEncoderReading > encoderReadRateMs) {
 			encCount = enc.read();
 			encCount = abs(encCount);
@@ -146,10 +164,12 @@ void DriveTrain::driveDisplacement(double displacement, int angle, double veloci
 		Serial.println(abs(encCount - startCount));
 		driveStraight(angle, velocity);
 	}
-	if(abs(encCount - startCount)  >= toMove * 0.75){
+	if((abs(encCount - startCount)  >= toMove * 0.75) && tileColor != Black ) {
 		lastDisplacementCompleted = true;
-	}else{
-		lastDisplacementCompleted = false;
+	}
+
+	if(tileColor == Black){
+		interruptedColor = true;
 	}
 	driveVelocity(0);
 }
@@ -200,7 +220,7 @@ void DriveTrain::alignWithWall(RobotFace faceToAlign) {
 }
 
 Color DriveTrain::getTileColor(){
-	colorSensor.getColor();
+	return colorSensor.getColor();
 }
 
 bool DriveTrain::wasLastDisplacementCompleted(){
@@ -210,3 +230,20 @@ bool DriveTrain::wasLastDisplacementCompleted(){
 double DriveTrain::getLastDisplacement(){
 	return lastDisplacement;
 }
+
+bool DriveTrain::leftKitLastMovement(){
+	return leftKit;
+}
+
+void DriveTrain::setLeftKit(bool value){
+	leftKit = value;
+}	
+
+bool DriveTrain::wasInterruptedColor(){
+	return interruptedColor;
+}
+
+void DriveTrain::setShouldDispense(bool value){
+	shouldDispense = value;
+}
+

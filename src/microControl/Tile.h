@@ -11,7 +11,7 @@ public:
 	static const byte wallDownMask = B00100000;
 	static const byte wallLeftMask = B00010000;
 	static const byte isRampMask = B00001000;
-	static const byte hasVictimMask = B00000100;
+	static const byte leftKitMask = B00000100;
 	static const byte isBlackMask = B00000010;
 	static const byte isCheckpointMask = B00000001;
 	static const byte maskVisited = B10000000;
@@ -21,7 +21,8 @@ public:
 	bool isRamp();
 	bool wallExists(Direction side);
 	bool setWall(Direction side, bool value);
-	bool hasVictim();
+	void setLeftKit(bool value);
+	bool getLeftKit();
 	bool wasVisited();
 	void visited(bool value);
 	Color getColor();

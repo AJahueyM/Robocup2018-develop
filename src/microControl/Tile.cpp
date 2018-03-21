@@ -73,6 +73,18 @@ bool Tile::setWall(Direction side, bool value){
     }
 }
 
+void Tile::setLeftKit(bool value){
+    if(value)
+        identity = identity | leftKitMask;
+    else
+        identity = identity & ~leftKitMask;
+}
+
+bool Tile::getLeftKit(){
+    byte result = identity & leftKitMask;
+    return result != 0;
+}
+
 bool Tile::wasVisited() {
     byte result = identity2  & maskVisited;
     return result != 0;
@@ -87,10 +99,15 @@ void Tile::visited(bool value){
 }
 
 Color Tile::getColor(){
-    if(identity & isBlackMask != 0){
+    byte result = B00000000;
+
+    result = identity & isBlackMask;
+    if(result != 0){
         return Black;
     }
-    if(identity & isCheckpointMask != 0){
+    result = identity & isCheckpointMask;
+
+    if(result != 0){
         return Silver;
     }
     return White;

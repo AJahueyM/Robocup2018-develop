@@ -26,7 +26,7 @@ public:
 private:
 	vector<vector<Tile>> tileMap;
 	Coord robotCoord;
-	byte mockIdentity = B11111111;
+	byte mockIdentity = B11111101;
 	Tile mockTile;
 	Direction robotDirection;
 

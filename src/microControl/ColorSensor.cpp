@@ -20,34 +20,32 @@ Color ColorSensor::getColor(){
   if(millis() - lastReadTime > timeoutReads){
     digitalWrite(S2,LOW);
     digitalWrite(S3,LOW);
-    delay(15);
     redFrequency = pulseIn(sensorOut, LOW);
   
     digitalWrite(S2,LOW);
     digitalWrite(S3,HIGH);
-    delay(15);
     blueFrequency = pulseIn(sensorOut, LOW);
 
     
     digitalWrite(S2,HIGH);
     digitalWrite(S3,HIGH);
-    delay(15);
-    greenFrequency = pulseIn(sensorOut, LOW);
+    greenFrequency = pulseIn(sensorOut, LOW);    
+    lastReadTime = millis();
+  }
+  if(calibrar){
+    Serial.print("R= ");
+    Serial.print(redFrequency);
+    Serial.print(" G= ");
+    Serial.print(greenFrequency);
+    Serial.print(" B= ");
+    Serial.println(blueFrequency);
+  }
 
-    if(calibrar){
-      Serial.print("R= ");
-      Serial.print(redFrequency);
-      Serial.print(" G= ");
-      Serial.print(greenFrequency);
-      Serial.print(" B= ");
-      Serial.println(blueFrequency);
-    }
-
-    if((withinRange(redFrequency, 9)&& withinRange(greenFrequency, 12))&& withinRange(blueFrequency, 4)){
+  if((withinRange(redFrequency, 13)&& withinRange(greenFrequency, 16))&& withinRange(blueFrequency, 5)){
       if(calibrar)
         Serial.print(" WHITE ");
       return White;
-    }else if(((withinRange(redFrequency, 35)&& withinRange(greenFrequency, 40))&& withinRange(blueFrequency, 10)) ){
+    }else if(((withinRange(redFrequency, 40)&& withinRange(greenFrequency, 45))&& withinRange(blueFrequency, 14)) ){
       if(calibrar)
         Serial.print(" BLACK ");
       return Black;
@@ -57,8 +55,7 @@ Color ColorSensor::getColor(){
       return Silver;
     }else{
       Serial.print("NONE");
+      return White;
     }
     Serial.println();
-    lastReadTime = millis();
-  }
 }
