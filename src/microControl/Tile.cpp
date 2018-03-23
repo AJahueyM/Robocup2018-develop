@@ -90,6 +90,11 @@ bool Tile::wasVisited() {
     return result != 0;
 }
 
+bool Tile::hasBump(){
+    byte result = identity2 & hasBumpMask;
+    return result != 0;
+}
+
 void Tile::visited(bool value){
     if(value){
         identity2 = identity2 | maskVisited;

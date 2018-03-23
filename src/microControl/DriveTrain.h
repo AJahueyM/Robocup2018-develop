@@ -32,6 +32,7 @@ private:
 	ColorSensor colorSensor = ColorSensor();
 	LCD& lcd = LCD::getInstance();
 	bool lastDisplacementCompleted = false, interruptedColor = false, leftKit = false, shouldDispense = false;
+	bool drivingWithDistance = false;
 public:
 	void setRightMotorsVelocity(double velocity);
 	void setLeftMotorsVelocity(double velocity);
@@ -45,6 +46,7 @@ public:
 	void resetYaw();
 	void resetPitch();
 	void resetAll();
+	void setYawOffset(int value);
 	void turnToAngle(int angle);
 	void driveStraight(int angle, double velocity);
 	int getDistanceFront();

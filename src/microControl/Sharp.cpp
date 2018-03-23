@@ -6,6 +6,7 @@ Sharp::Sharp(int analogPort){
 }
 
 int Sharp::getDistance(){
+	int average = 0;
 	for(int i = 0; i < readForFilter; ++i){
 		double volts = analogRead(analogPort)  * 0.0048828125;
 

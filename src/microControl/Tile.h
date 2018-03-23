@@ -15,6 +15,7 @@ public:
 	static const byte isBlackMask = B00000010;
 	static const byte isCheckpointMask = B00000001;
 	static const byte maskVisited = B10000000;
+	static const byte hasBumpMask = B01000000;
 	Tile();
 	Tile(byte identity);
 	Tile(byte identity, byte identity2);
@@ -24,6 +25,7 @@ public:
 	void setLeftKit(bool value);
 	bool getLeftKit();
 	bool wasVisited();
+	bool hasBump();
 	void visited(bool value);
 	Color getColor();
 private:

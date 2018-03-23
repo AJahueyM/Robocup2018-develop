@@ -25,6 +25,7 @@ public:
 	int getNonVisitedTiles();
 private:
 	vector<vector<Tile>> tileMap;
+	void checkPockets();
 	Coord robotCoord;
 	byte mockIdentity = B11111101;
 	Tile mockTile;

@@ -80,6 +80,8 @@ void Map::expandMap(){
 			tileMap.push_back(newRow);
 		}
 	}
+
+	checkPockets();
 }
 
 void Map::setRobotCoord(Coord coord){
@@ -107,4 +109,28 @@ int Map::getNonVisitedTiles(){
 		}
 	}
 	return counter;
+}
+
+void Map::checkPockets(){
+	for(int y = 0; y < tileMap.size() ;++y){
+		for(int x = 0; x < tileMap[0].size(); ++x){
+			Coord left, up, right, down;
+			up.setX(x);
+			up.setY(y + 1);
+
+			down.setX(x);
+			down.setY(y-1);
+
+			right.setX(x +1);
+			right.setY(y);
+
+			left.setX(x - 1);
+			left.setY(y);
+
+			bool pocket = (getTileAt(up).wallExists(Down) && getTileAt(down).wallExists(Up)) && (getTileAt(right).wallExists(Left) && getTileAt(left).wallExists(Right));
+			if(pocket){
+				setTileAt(Coord(x, y), mockTile);
+			}
+		}
+	}
 }
