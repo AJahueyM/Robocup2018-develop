@@ -4,8 +4,10 @@ DriveTrain::DriveTrain() : topRight(2), topLeft(3), lowRight(4), lowLeft(1), enc
 	frontSharp(12), rightSharp(11), leftSharp(13),
 	backRLimitS(51), backLLimitS(53) {
 	Serial.println("DriveTrain initializing...");
-
-
+	pinMode(led1Pin, OUTPUT);
+	pinMode(led2Pin, OUTPUT);
+	digitalWrite(led1Pin, LOW);
+	digitalWrite(led2Pin, LOW);
   	enc.write(0);
 
 	Serial.println("DriveTrain initialized");
@@ -26,18 +28,23 @@ void DriveTrain::setLeftMotorsVelocity(double velocity) {
 void DriveTrain::checkHeatDispense() {
 	if(millis() - lastHeatReading > heatReadRateMs && shouldDispense){
 		if (mlxL.readObjectTempC() - mlxL.readAmbientTempC() > heatDiferenceVictim) {
+			digitalWrite(led1Pin, HIGH);
+			digitalWrite(led2Pin, HIGH);
 			turn(0);
 			dispenser.dispenseDirection(DispenserDirection::left);
 			leftKit = true;
 		}
 		if (mlxR.readObjectTempC() - mlxR.readAmbientTempC() > heatDiferenceVictim) {
+			digitalWrite(led1Pin, HIGH);
+			digitalWrite(led2Pin, HIGH);
 			turn(0);
 			dispenser.dispenseDirection(DispenserDirection::right);
 			leftKit = true;
 		}
 		lastHeatReading = millis();
 	}
-
+	digitalWrite(led1Pin, LOW);
+	digitalWrite(led2Pin, LOW);
 }
 void DriveTrain::driveVelocity(double velocity) {
 	setRightMotorsVelocity(velocity);
@@ -120,9 +127,9 @@ void DriveTrain::driveStraight(int angle, double velocity) {
 	} else if (outputMultiplier < 0.0) {
 		outputMultiplier = 0.0; // RE ESTABLECIENDO EL VALOR DE OUTPUTMULTIPLIER CUANDO VELOCIDAD ES NEGATIVA
 	}
-	if(getDistanceRight() < 10 || getDistanceLeft() < 10){
+	if(getDistanceRight() < 8 || getDistanceLeft() < 8){
 		drivingWithDistance = true;
-		if(getDistanceRight() < 10){
+		if(getDistanceRight() < 8){
 			setLeftMotorsVelocity(velocity * .8);
 			setRightMotorsVelocity(velocity);
 		}else{
@@ -180,28 +187,28 @@ void DriveTrain::driveDisplacement(double displacement, int angle, double veloci
 		driveStraight(angle, velocity);
 
 
-		if((abs(abs(getYaw()) - abs(angle)) > 10) && !drivingWithDistance){
-			correctionCounter++;
-			toMove -= abs(encCount - startCount);
-			toMove *= 1.15;
-			long start = millis();
-			while(millis() - start < 500 && correctionCounter < 3){ // millis() - toMove < 500
-				driveVelocity(-1);
-			}
-			if(correctionCounter >= 3){
-				while(millis() - start < 1000){ // millis() - toMove < 500
-					driveVelocity(1);
-				}	
-				correctionCounter = 0;		
-			}
-			turnToAngle(angle);
-			enc.write(0);
-			startCount = enc.read();
-		}
+		// if((abs(abs(getYaw()) - abs(angle)) > 10) && !drivingWithDistance){
+		// 	correctionCounter++;
+		// 	toMove -= abs(encCount - startCount);
+		// 	toMove *= 1.15;
+		// 	long start = millis();
+		// 	while(millis() - start < 500 && correctionCounter < 3){ // millis() - toMove < 500
+		// 		driveVelocity(-1);
+		// 	}
+		// 	if(correctionCounter >= 3){
+		// 		while(millis() - start < 1000){ // millis() - toMove < 500
+		// 			driveVelocity(1);
+		// 		}	
+		// 		correctionCounter = 0;		
+		// 	}
+		// 	turnToAngle(angle);
+		// 	enc.write(0);
+		// 	startCount = enc.read();
+		// }
 
 		if((abs(getPitch()) > 5 && abs(getPitch()) < 15 ) && !expandedMovement){
 			expandedMovement = true;
-			toMove *= 1.25;
+			toMove *= 1.1;
 			velocity *= 1.25;
 		}
 	}
